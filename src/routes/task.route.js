@@ -15,6 +15,6 @@ taskRouter.get("/tasks/:id", getTaskById);
 
 taskRouter.post("/tasks", insertTask);
 
-taskRouter.put("/tasks", updateTask);
+taskRouter.put("/tasks/:id", updateTask);
 
-taskRouter.delete("/tasks", deleteTask);
+taskRouter.delete("/tasks/:id", deleteTask);
