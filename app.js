@@ -1,7 +1,7 @@
 import express from "express";
 import { startDB } from "./src/config/database.js";
-import { taskRouter } from "./src/routes/task.route.js";
-import { userRouter } from "./src/routes/user.route.js";
+import { taskRouter } from "./src/routes/task.routes.js";
+import { userRouter } from "./src/routes/user.routes.js";
 import dotenv from "dotenv";
 
 dotenv.config();

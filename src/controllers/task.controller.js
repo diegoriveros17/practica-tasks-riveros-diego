@@ -1,8 +1,8 @@
-import { Task } from "../models/task.model.js";
+import { TaskModel } from "../models/task.model.js";
 
 export const getAllTasks = async (req, res) => {
   try {
-    const tasks = await Task.findAll();
+    const tasks = await TaskModel.findAll();
 
     return res.status(200).json(tasks);
   } catch (error) {
@@ -15,7 +15,7 @@ export const getAllTasks = async (req, res) => {
 export const getTaskById = async (req, res) => {
   try {
     const idTask = req.params.id;
-    const task = await Task.findByPk(idTask);
+    const task = await TaskModel.findByPk(idTask);
 
     if (!task) {
       return res.status(404).json({
@@ -33,7 +33,7 @@ export const getTaskById = async (req, res) => {
 export const insertTask = async (req, res) => {
   try {
     const { title, description, isComplete } = req.body;
-    const tasks = await Task.findAll();
+    const tasks = await TaskModel.findAll();
 
     const taskExist = tasks.find((task) => {
       return task.title.toUpperCase() === title.toUpperCase();
@@ -69,7 +69,7 @@ export const insertTask = async (req, res) => {
       });
     }
 
-    const task = await Task.create({
+    const task = await TaskModel.create({
       title,
       description,
       isComplete,
@@ -89,7 +89,7 @@ export const insertTask = async (req, res) => {
 export const updateTask = async (req, res) => {
   try {
     const idTask = req.params.id;
-    const task = await Task.findByPk(idTask);
+    const task = await TaskModel.findByPk(idTask);
     const { title, description, isComplete } = req.body;
 
     if (!task) {
@@ -118,7 +118,7 @@ export const updateTask = async (req, res) => {
 export const deleteTask = async (req, res) => {
   try {
     const idTask = req.params.id;
-    const task = await Task.findByPk(idTask);
+    const task = await TaskModel.findByPk(idTask);
 
     if (!task) {
       return res.status(404).json({

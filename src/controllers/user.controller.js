@@ -1,8 +1,8 @@
-import { User } from "../models/user.model.js";
+import { UserModel } from "../models/user.model.js";
 
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.findAll();
+    const users = await UserModel.findAll();
 
     return res.status(200).json(users);
   } catch (error) {
@@ -15,7 +15,7 @@ export const getAllUsers = async (req, res) => {
 export const getUserById = async (req, res) => {
   try {
     const idUser = req.params.id;
-    const user = await User.findByPk(idUser);
+    const user = await UserModel.findByPk(idUser);
 
     if (!user) {
       return res.status(404).json({
@@ -33,7 +33,7 @@ export const getUserById = async (req, res) => {
 export const insertUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    const users = await User.findAll();
+    const users = await UserModel.findAll();
 
     const userExist = users.find((user) => {
       return user.email.toUpperCase() === email.toUpperCase();
@@ -66,7 +66,7 @@ export const insertUser = async (req, res) => {
       });
     }
 
-    const user = await User.create({
+    const user = await UserModel.create({
       name,
       email,
       password,
@@ -86,7 +86,7 @@ export const insertUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const idUser = req.params.id;
-    const user = await User.findByPk(idUser);
+    const user = await UserModel.findByPk(idUser);
     const { name, email, password } = req.body;
 
     if (!user) {
@@ -115,7 +115,7 @@ export const updateUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
   try {
     const idUser = req.params.id;
-    const user = await User.findByPk(idUser);
+    const user = await UserModel.findByPk(idUser);
 
     if (!user) {
       return res.status(404).json({
