@@ -1,8 +1,22 @@
-import { Task } from "../models/task.model.js";
+import { TaskModel } from "../models/task.model.js";
+import { UserModel } from "../models/user.model.js";
 
 export const getAllTasks = async (req, res) => {
   try {
-    const tasks = await Task.findAll();
+    const tasks = await TaskModel.findAll({
+      attributes: {
+        exclude: ["id", "user_id"],
+      },
+      include: [
+        {
+          model: UserModel,
+          as: "author",
+          attributes: {
+            exclude: ["id", "password"],
+          },
+        },
+      ],
+    });
 
     return res.status(200).json(tasks);
   } catch (error) {
@@ -15,7 +29,20 @@ export const getAllTasks = async (req, res) => {
 export const getTaskById = async (req, res) => {
   try {
     const idTask = req.params.id;
-    const task = await Task.findByPk(idTask);
+    const task = await TaskModel.findByPk(idTask, {
+      attributes: {
+        exclude: ["id", "user_id"],
+      },
+      include: [
+        {
+          model: UserModel,
+          as: "author",
+          attributes: {
+            exclude: ["id", "password"],
+          },
+        },
+      ],
+    });
 
     if (!task) {
       return res.status(404).json({
@@ -32,8 +59,9 @@ export const getTaskById = async (req, res) => {
 
 export const insertTask = async (req, res) => {
   try {
-    const { title, description, isComplete } = req.body;
-    const tasks = await Task.findAll();
+    const { title, description, is_complete, user_id } = req.body;
+    const tasks = await TaskModel.findAll();
+    const userExist = await UserModel.findByPk(user_id);
 
     const taskExist = tasks.find((task) => {
       return task.title.toUpperCase() === title.toUpperCase();
@@ -41,7 +69,7 @@ export const insertTask = async (req, res) => {
 
     if (taskExist) {
       return res.status(400).json({
-        message: "Ya existe una tarea con el mismo titulo",
+        message: "No puede existir una tarea con el mismo titulo",
       });
     }
 
@@ -63,16 +91,23 @@ export const insertTask = async (req, res) => {
       });
     }
 
-    if (typeof isComplete !== "boolean") {
+    if (typeof is_complete !== "boolean") {
       return res.status(400).json({
         message: "El valor del campo isComplete solo puede ser true o false",
       });
     }
 
-    const task = await Task.create({
+    if (!user_id || !userExist) {
+      return res.status(400).json({
+        message: "La tarea debe estar asociado a un usuario existente",
+      });
+    }
+
+    const task = await TaskModel.create({
       title,
       description,
-      isComplete,
+      is_complete,
+      user_id,
     });
 
     return res.status(201).json({
@@ -89,7 +124,7 @@ export const insertTask = async (req, res) => {
 export const updateTask = async (req, res) => {
   try {
     const idTask = req.params.id;
-    const task = await Task.findByPk(idTask);
+    const task = await TaskModel.findByPk(idTask);
     const { title, description, isComplete } = req.body;
 
     if (!task) {
@@ -118,7 +153,7 @@ export const updateTask = async (req, res) => {
 export const deleteTask = async (req, res) => {
   try {
     const idTask = req.params.id;
-    const task = await Task.findByPk(idTask);
+    const task = await TaskModel.findByPk(idTask);
 
     if (!task) {
       return res.status(404).json({
