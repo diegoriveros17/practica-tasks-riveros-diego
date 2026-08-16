@@ -1,0 +1,19 @@
+import { DataTypes } from "sequelize";
+import { sequelize } from "../config/database.js";
+
+export const TeamModel = sequelize.define(
+  "Team",
+  {
+    name: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+    },
+    description: {
+      type: DataTypes.STRING(150),
+      allowNull: true,
+    },
+  },
+  {
+    timestamps: false,
+  },
+);
