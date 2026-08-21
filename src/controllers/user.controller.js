@@ -1,5 +1,6 @@
 import { UserModel } from "../models/user.model.js";
 import { TeamModel } from "../models/team.models.js";
+import { matchedData, validationResult } from "express-validator";
 
 export const getAllUsers = async (req, res) => {
   try {
