@@ -1,4 +1,5 @@
 import { body } from "express-validator";
+import { UserModel } from "../../models/user.model.js";
 
 export const createUserValidation = [
   body("name").notEmpty().withMessage("El name no puede ser vacio"),
@@ -6,7 +7,13 @@ export const createUserValidation = [
     .notEmpty()
     .withMessage("El email no puede ser vacio")
     .isEmail()
-    .withMessage("El email ingresado no es correcto"),
+    .withMessage("El email ingresado no es correcto")
+    .custom(async (email) => {
+      const userExist = await UserModel.findOne({ where: { email } });
+      if (userExist) {
+        throw new Error("Ya existe un usuario registrado con este email");
+      }
+    }),
   body("password").notEmpty().withMessage("La contreseña no puede ser vacia"),
 ];
 

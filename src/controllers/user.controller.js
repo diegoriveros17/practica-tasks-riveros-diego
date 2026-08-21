@@ -52,46 +52,9 @@ export const getUserById = async (req, res) => {
 
 export const insertUser = async (req, res) => {
   try {
-    if (typeof req.body === "undefined") {
-      return res.status(400).json({
-        message: "No se enviaron datos para crear el usuario",
-      });
-    }
-    const { name, email, password } = req.body;
-    const userExist = await UserModel.findOne({ where: { email } });
+    const validateData = matchedData(req);
 
-    if (userExist) {
-      return res.status(400).json({
-        message: "Ya existe una usuario registrado con el email ",
-      });
-    }
-
-    if (!name || name.trim() === "" || name.trim().length > 100) {
-      return res.status(400).json({
-        message:
-          "El nombre es obligatorio, no puede estar vacío ni superar los 100 caracteres.",
-      });
-    }
-
-    if (!email || email.trim() === "" || email.trim().length > 100) {
-      return res.status(400).json({
-        message:
-          "El campo email no puede estar vacío ni superar los 100 caracteres.",
-      });
-    }
-
-    if (!password || password.trim() === "" || password.trim().length > 100) {
-      return res.status(400).json({
-        message:
-          "El campo password no puede estar vacío ni superar los 100 caracteres.",
-      });
-    }
-
-    const user = await UserModel.create({
-      name,
-      email,
-      password,
-    });
+    const user = await UserModel.create(validateData);
 
     return res.status(201).json({
       message: "Usuario agregado correctamente",
