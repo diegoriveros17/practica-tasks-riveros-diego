@@ -1,8 +1,18 @@
-import { User } from "../models/user.model.js";
+import { UserModel } from "../models/user.model.js";
+import { TeamModel } from "../models/team.models.js";
 
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.findAll();
+    const users = await UserModel.findAll({
+      attributes: { exclude: ["password", "id"] },
+      include: [
+        {
+          model: TeamModel,
+          as: "equipos",
+          through: { attributes: [] },
+        },
+      ],
+    });
 
     return res.status(200).json(users);
   } catch (error) {
@@ -15,7 +25,16 @@ export const getAllUsers = async (req, res) => {
 export const getUserById = async (req, res) => {
   try {
     const idUser = req.params.id;
-    const user = await User.findByPk(idUser);
+    const user = await UserModel.findByPk(idUser, {
+      attributes: { exclude: ["password", "id"] },
+      include: [
+        {
+          model: TeamModel,
+          as: "equipos",
+          through: { attributes: [] },
+        },
+      ],
+    });
 
     if (!user) {
       return res.status(404).json({
@@ -32,12 +51,13 @@ export const getUserById = async (req, res) => {
 
 export const insertUser = async (req, res) => {
   try {
+    if (typeof req.body === "undefined") {
+      return res.status(400).json({
+        message: "No se enviaron datos para crear el usuario",
+      });
+    }
     const { name, email, password } = req.body;
-    const users = await User.findAll();
-
-    const userExist = users.find((user) => {
-      return user.email.toUpperCase() === email.toUpperCase();
-    });
+    const userExist = await UserModel.findOne({ where: { email } });
 
     if (userExist) {
       return res.status(400).json({
@@ -66,7 +86,7 @@ export const insertUser = async (req, res) => {
       });
     }
 
-    const user = await User.create({
+    const user = await UserModel.create({
       name,
       email,
       password,
@@ -86,7 +106,7 @@ export const insertUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const idUser = req.params.id;
-    const user = await User.findByPk(idUser);
+    const user = await UserModel.findByPk(idUser);
     const { name, email, password } = req.body;
 
     if (!user) {
@@ -115,7 +135,7 @@ export const updateUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
   try {
     const idUser = req.params.id;
-    const user = await User.findByPk(idUser);
+    const user = await UserModel.findByPk(idUser);
 
     if (!user) {
       return res.status(404).json({
