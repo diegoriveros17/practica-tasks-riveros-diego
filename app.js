@@ -5,7 +5,7 @@ import { userRouter } from "./src/routes/user.routes.js";
 import dotenv from "dotenv";
 import { profileRouter } from "./src/routes/profile.routes.js";
 import { teamRouter } from "./src/routes/team.routes.js";
-import { UserTeamModel } from "./src/models/user_team.model.js";
+// import { UserTeamModel } from "./src/models/user_team.model.js";
 
 dotenv.config();
 

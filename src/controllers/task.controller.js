@@ -1,5 +1,6 @@
 import { TaskModel } from "../models/task.model.js";
 import { UserModel } from "../models/user.model.js";
+import { matchedData, validationResult } from "express-validator";
 
 export const getAllTasks = async (req, res) => {
   try {
@@ -28,8 +29,9 @@ export const getAllTasks = async (req, res) => {
 
 export const getTaskById = async (req, res) => {
   try {
-    const idTask = req.params.id;
-    const task = await TaskModel.findByPk(idTask, {
+    const validateData = matchedData(req);
+    const { id } = validateData;
+    const task = await TaskModel.findByPk(id, {
       attributes: {
         exclude: ["id", "user_id"],
       },
@@ -44,11 +46,6 @@ export const getTaskById = async (req, res) => {
       ],
     });
 
-    if (!task) {
-      return res.status(404).json({
-        message: "No existe tarea con el id especificado",
-      });
-    }
     return res.status(200).json(task);
   } catch (error) {
     return res.status(500).json({
@@ -59,109 +56,48 @@ export const getTaskById = async (req, res) => {
 
 export const insertTask = async (req, res) => {
   try {
-    const { title, description, is_complete, user_id } = req.body;
-    const tasks = await TaskModel.findAll();
-    const userExist = await UserModel.findByPk(user_id);
+    const validateData = matchedData(req);
 
-    const taskExist = tasks.find((task) => {
-      return task.title.toUpperCase() === title.toUpperCase();
-    });
-
-    if (taskExist) {
-      return res.status(400).json({
-        message: "No puede existir una tarea con el mismo titulo",
-      });
-    }
-
-    if (!title || title.trim() === "" || title.trim().length > 100) {
-      return res.status(400).json({
-        message:
-          "El título es obligatorio, no puede estar vacío ni superar los 100 caracteres.",
-      });
-    }
-
-    if (
-      !description ||
-      description.trim() === "" ||
-      description.trim().length > 100
-    ) {
-      return res.status(400).json({
-        message:
-          "La descripcion no puede estar vacío ni superar los 100 caracteres.",
-      });
-    }
-
-    if (typeof is_complete !== "boolean") {
-      return res.status(400).json({
-        message: "El valor del campo isComplete solo puede ser true o false",
-      });
-    }
-
-    if (!user_id || !userExist) {
-      return res.status(400).json({
-        message: "La tarea debe estar asociado a un usuario existente",
-      });
-    }
-
-    const task = await TaskModel.create({
-      title,
-      description,
-      is_complete,
-      user_id,
-    });
+    await TaskModel.create(validateData);
 
     return res.status(201).json({
       message: "Tarea agregada correctamente",
-      task,
+      validateData,
     });
   } catch (error) {
     return res.status(500).json({
-      message: error,
+      message: "Error interno del servidor",
     });
   }
 };
 
 export const updateTask = async (req, res) => {
   try {
-    const idTask = req.params.id;
-    const task = await TaskModel.findByPk(idTask);
-    const { title, description, isComplete } = req.body;
+    const validateData = matchedData(req);
+    const { id, ...data } = validateData;
+    console.log(data);
 
-    if (!task) {
-      return res.status(404).json({
-        message: "No existe tarea con el id especificado para modificar",
-      });
-    }
-
-    await task.update({
-      title,
-      description,
-      isComplete,
+    await TaskModel.update(data, {
+      where: { id },
     });
 
     return res.status(200).json({
       message: "Tarea modificada",
-      task,
+      data,
     });
   } catch (error) {
     res.status(500).json({
-      message: "Error interno del servidor",
+      message: error,
     });
   }
 };
 
 export const deleteTask = async (req, res) => {
   try {
-    const idTask = req.params.id;
-    const task = await TaskModel.findByPk(idTask);
+    const validateData = matchedData(req);
+    const { id } = validateData;
 
-    if (!task) {
-      return res.status(404).json({
-        message: "No existe tarea con el id especificado para eliminar",
-      });
-    }
-
-    await task.destroy();
+    await TaskModel.destroy({ where: { id } });
 
     return res.status(200).json({
       message: "Tarea Eliminada",

@@ -8,16 +8,30 @@ import {
   updateTeam,
 } from "../controllers/team.controller.js";
 
+import { validate } from "../middlewares/validate.js";
+import {
+  createTeamUserValidation,
+  createTeamValidation,
+  deleteTeamValidation,
+  getTeamValidation,
+  updateTeamValidation,
+} from "../middlewares/validations/team.validation.js";
+
 export const teamRouter = Router();
 
 teamRouter.get("/teams", getAllTeams);
 
-teamRouter.get("/teams/:id", getTeamById);
+teamRouter.get("/teams/:id", getTeamValidation, validate, getTeamById);
 
-teamRouter.post("/teams", insertTeam);
+teamRouter.post("/teams", createTeamValidation, validate, insertTeam);
 
-teamRouter.put("/teams/:id", updateTeam);
+teamRouter.put("/teams/:id", updateTeamValidation, validate, updateTeam);
 
-teamRouter.delete("/teams/:id", deleteTeam);
+teamRouter.delete("/teams/:id", deleteTeamValidation, validate, deleteTeam);
 
-teamRouter.post("/teams/addUser", addUserToTeam);
+teamRouter.post(
+  "/teams/addUser",
+  createTeamUserValidation,
+  validate,
+  addUserToTeam,
+);
