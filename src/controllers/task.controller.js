@@ -29,8 +29,9 @@ export const getAllTasks = async (req, res) => {
 
 export const getTaskById = async (req, res) => {
   try {
-    const idTask = req.params.id;
-    const task = await TaskModel.findByPk(idTask, {
+    const validateData = matchedData(req);
+    const { id } = validateData;
+    const task = await TaskModel.findByPk(id, {
       attributes: {
         exclude: ["id", "user_id"],
       },
@@ -74,6 +75,7 @@ export const updateTask = async (req, res) => {
   try {
     const validateData = matchedData(req);
     const { id, ...data } = validateData;
+    console.log(data);
 
     await TaskModel.update(data, {
       where: { id },

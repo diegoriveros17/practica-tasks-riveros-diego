@@ -1,5 +1,6 @@
 import { ProfileModel } from "../models/profile.model.js";
 import { UserModel } from "../models/user.model.js";
+import { matchedData, validationResult } from "express-validator";
 
 export const getAllProfiles = async (req, res) => {
   try {
@@ -26,8 +27,9 @@ export const getAllProfiles = async (req, res) => {
 
 export const getProfileById = async (req, res) => {
   try {
-    const idProfile = req.params.id;
-    const profile = await ProfileModel.findByPk(idProfile, {
+    const validateData = matchedData(req);
+    const { id } = validateData;
+    const profile = await ProfileModel.findByPk(id, {
       attributes: {
         exclude: ["user_id"],
       },
@@ -40,11 +42,6 @@ export const getProfileById = async (req, res) => {
       ],
     });
 
-    if (!profile) {
-      return res.status(404).json({
-        message: "No existe un asociado al id especificado",
-      });
-    }
     return res.status(200).json(profile);
   } catch (error) {
     return res.status(500).json({
@@ -55,38 +52,13 @@ export const getProfileById = async (req, res) => {
 
 export const insertProfile = async (req, res) => {
   try {
-    const { description, url_img, user_id } = req.body;
+    const validateData = matchedData(req);
 
-    const profileExist = await ProfileModel.findOne({ where: { user_id } });
-    const userExist = await UserModel.findOne({ where: { id: user_id } });
-
-    if (!userExist) {
-      return res.status(400).json({
-        message: "No existe el usuario con el que intenta crear el perfil",
-      });
-    }
-
-    if (profileExist) {
-      return res.status(400).json({
-        message: "Ya existe una perfil creado para este usuario",
-      });
-    }
-
-    if (!user_id || typeof userExist === "undefined") {
-      return res.status(400).json({
-        message: "El perfil solo puede crearse asociado a un usuario existente",
-      });
-    }
-
-    const profile = await ProfileModel.create({
-      description,
-      url_img,
-      user_id,
-    });
+    await ProfileModel.create(validateData);
 
     return res.status(201).json({
       message: "Perfil creado correctamente",
-      profile,
+      validateData,
     });
   } catch (error) {
     return res.status(500).json({
@@ -97,21 +69,18 @@ export const insertProfile = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const idProfile = req.params.id;
-    const profile = await ProfileModel.findByPk(idProfile);
-    const { description, url_img, user_id } = req.body;
+    const validateData = matchedData(req);
+    const { id, ...data } = validateData;
 
-    if (!profile) {
-      return res.status(404).json({
-        message: "No existe un perfil asociado al usuario para modificar",
-      });
-    }
+    console.log(id, " ", data);
 
-    await profile.update({ description, url_img });
+    await ProfileModel.update(data, {
+      where: { id },
+    });
 
     return res.status(200).json({
       message: "Perfil actualizado",
-      profile,
+      data,
     });
   } catch (error) {
     res.status(500).json({
@@ -122,17 +91,10 @@ export const updateProfile = async (req, res) => {
 
 export const deleteProfile = async (req, res) => {
   try {
-    const idProfile = req.params.id;
-    const profile = await ProfileModel.findByPk(idProfile);
+    const validateData = matchedData(req);
+    const { id } = validateData;
 
-    if (!profile) {
-      return res.status(404).json({
-        message:
-          "No existe un perfil asociado al usuario especificado para eliminar",
-      });
-    }
-
-    await profile.destroy();
+    await ProfileModel.destroy({ where: { id } });
 
     return res.status(200).json({
       message: "Perfil eliminado",
