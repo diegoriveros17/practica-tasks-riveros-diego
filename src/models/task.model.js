@@ -38,4 +38,8 @@ export const TaskModel = sequelize.define(
 //RELACION UNO A MUCHOS
 TaskModel.belongsTo(UserModel, { foreignKey: "user_id", as: "author" });
 
-UserModel.hasMany(TaskModel, { foreignKey: "user_id", as: "tareas" });
+UserModel.hasMany(TaskModel, {
+  foreignKey: "user_id",
+  as: "tareas",
+  onDelete: "CASCADE",
+});
