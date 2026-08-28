@@ -14,6 +14,6 @@ export const TeamModel = sequelize.define(
     },
   },
   {
-    timestamps: false,
+    timestamps: true,
   },
 );

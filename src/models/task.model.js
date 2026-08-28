@@ -31,7 +31,8 @@ export const TaskModel = sequelize.define(
     },
   },
   {
-    timestamps: false,
+    timestamps: true,
+    paranoid: true
   },
 );
 
@@ -42,4 +43,5 @@ UserModel.hasMany(TaskModel, {
   foreignKey: "user_id",
   as: "tareas",
   onDelete: "CASCADE",
+  hooks: true
 });
