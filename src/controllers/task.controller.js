@@ -1,5 +1,6 @@
-import { TaskModel } from "../models/task.model.js";
-import { UserModel } from "../models/user.model.js";
+// import { TaskModel } from "../models/task.model.js";
+// import { UserModel } from "../models/user.model.js";
+import { UserModel, TaskModel } from "../models/index.js";
 import { matchedData, validationResult } from "express-validator";
 
 export const getAllTasks = async (req, res) => {
@@ -34,7 +35,9 @@ export const getTaskById = async (req, res) => {
 
     const taskExist = await TaskModel.findByPk(id);
     if (!taskExist) {
-      return res.status(404).json("No existe una tarea registrada con este id");
+      return res
+        .status(404)
+        .json({ message: "No existe una tarea registrada con este id" });
     }
 
     const task = await TaskModel.findByPk(id, {
@@ -63,16 +66,20 @@ export const getTaskById = async (req, res) => {
 export const insertTask = async (req, res) => {
   try {
     const data = matchedData(req);
-    const { title, user_id } = data
+    const { title, user_id } = data;
 
     const userExist = await UserModel.findByPk(user_id);
     if (!userExist) {
-      return res.status(404).json("La tarea debe estar asociada a un usuario existente");
+      return res.status(404).json({
+        message: "La tarea debe estar asociada a un usuario existente",
+      });
     }
 
     const titleExist = await TaskModel.findOne({ where: { title } });
     if (titleExist) {
-      return res.status(409).json("Ya existe una tarea registrada con este titulo");
+      return res
+        .status(409)
+        .json({ message: "Ya existe una tarea registrada con este titulo" });
     }
 
     const user = await TaskModel.create(data);
@@ -97,20 +104,26 @@ export const updateTask = async (req, res) => {
 
     const titleExist = await TaskModel.findOne({ where: { title } });
     if (titleExist) {
-      return res.status(409).json("Ya existe una tarea registrada con este titulo");
+      return res
+        .status(409)
+        .json({ message: "Ya existe una tarea registrada con este titulo" });
     }
 
     const userExist = await UserModel.findByPk(user_id);
     if (!userExist) {
-      return res.status(404).json("La tarea debe estar asociada a un usuario existente");
+      return res.status(404).json({
+        message: "La tarea debe estar asociada a un usuario existente",
+      });
     }
 
     const taskExist = await TaskModel.findByPk(id);
     if (!taskExist) {
-      return res.status(404).json("No existe una tarea registrada con este id");
+      return res
+        .status(404)
+        .json({ message: "No existe una tarea registrada con este id" });
     }
 
-    const task = await TaskModel.update(data);
+    const task = await taskExist.update(data);
 
     return res.status(200).json({
       message: "Tarea modificada",
@@ -128,15 +141,16 @@ export const deleteTask = async (req, res) => {
     const { id } = matchedData(req, { locations: ["params"] });
     const taskExist = await TaskModel.findByPk(id);
     if (!taskExist) {
-      return res.status(404).json({ message: "No existe una tarea registrada con este id" })
+      return res
+        .status(404)
+        .json({ message: "No existe una tarea registrada con este id" });
     }
-
 
     const task = await taskExist.destroy();
 
     return res.status(200).json({
       message: "Tarea Eliminada",
-      task
+      task,
     });
   } catch (error) {
     return res.status(500).json({

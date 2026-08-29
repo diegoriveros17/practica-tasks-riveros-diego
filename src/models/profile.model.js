@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/database.js";
-import { UserModel } from "./user.model.js";
+// import { UserModel } from "./user.model.js";
 
 export const ProfileModel = sequelize.define(
   "Profile",
@@ -25,17 +25,7 @@ export const ProfileModel = sequelize.define(
     },
   },
   {
+    paranoid: true,
     timestamps: true,
-    paranoid: true
   },
 );
-
-//RELACION UNO A UNO
-ProfileModel.belongsTo(UserModel, { foreignKey: "user_id", as: "usuario" });
-
-UserModel.hasOne(ProfileModel, {
-  foreignKey: "user_id",
-  as: "profile",
-  onDelete: "CASCADE",
-  hooks: true,
-});

@@ -1,5 +1,6 @@
-import { UserModel } from "../models/user.model.js";
-import { TeamModel } from "../models/team.models.js";
+// import { UserModel } from "../models/user.model.js";
+// import { TeamModel } from "../models/team.models.js";
+import { UserModel, TeamModel } from "../models/index.js";
 import { matchedData, param, validationResult } from "express-validator";
 
 export const getAllUsers = async (req, res) => {
@@ -29,7 +30,9 @@ export const getUserById = async (req, res) => {
 
     const userExist = await UserModel.findByPk(id);
     if (!userExist) {
-      return res.status(404).json({ message: "No existe un usuario registrado con este id" })
+      return res
+        .status(404)
+        .json({ message: "No existe un usuario registrado con este id" });
     }
 
     const user = await UserModel.findByPk(id, {
@@ -58,7 +61,9 @@ export const insertUser = async (req, res) => {
 
     const emailExist = await UserModel.findOne({ where: { email } });
     if (emailExist) {
-      return res.status(409).json({ message: "Ya existe un usuario registrado con este email" })
+      return res
+        .status(409)
+        .json({ message: "Ya existe un usuario registrado con este email" });
     }
 
     const user = await UserModel.create(data);
@@ -82,7 +87,9 @@ export const updateUser = async (req, res) => {
     const userExist = await UserModel.findByPk(id);
 
     if (!userExist) {
-      return res.status(404).json({ message: "No existe un usuario registrado con este id" })
+      return res
+        .status(404)
+        .json({ message: "No existe un usuario registrado con este id" });
     }
 
     const user = await userExist.update(data);
@@ -104,14 +111,16 @@ export const deleteUser = async (req, res) => {
 
     const userExist = await UserModel.findByPk(id);
     if (!userExist) {
-      return res.status(404).json({ message: "No existe un usuario registrado con este id" })
+      return res
+        .status(404)
+        .json({ message: "No existe un usuario registrado con este id" });
     }
 
     const user = await userExist.destroy();
 
     return res.status(200).json({
       message: "Usuario Eliminado",
-      user
+      user,
     });
   } catch (error) {
     return res.status(500).json({

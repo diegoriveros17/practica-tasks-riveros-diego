@@ -18,33 +18,35 @@ export const createTaskValidation = [
     .notEmpty()
     .withMessage("El user_id no puede ser vacio")
     .isInt()
-    .withMessage("El user_id debe ser un numero entero")
+    .withMessage("El user_id debe ser un numero entero"),
 ];
 
 export const updateTaskValidation = [
   body("title")
+    .optional()
     .notEmpty()
     .withMessage("El title no puede ser vacio")
     .isLength({ max: 100 })
     .withMessage("El title no puede superar los 100 caracteres"),
   body("description")
+    .optional()
     .notEmpty()
     .withMessage("La description no puede ser vacia")
     .isLength({ max: 100 })
     .withMessage("La description no puede superar los 100 caracteres"),
   body("is_complete")
+    .optional()
     .isBoolean()
     .withMessage("El campo is_complete debe ser un valor booleano"),
   body("user_id")
-    .notEmpty()
-    .withMessage("El user_id no puede ser vacio")
+    .optional()
     .isInt()
     .withMessage("El user_id debe ser un numero entero"),
   param("id")
     .notEmpty()
     .withMessage("El id no debe ser vacio")
     .isInt()
-    .withMessage("El id debe ser un numero entero")
+    .withMessage("El id debe ser un numero entero"),
 ];
 
 export const deleteTaskValidation = [
@@ -52,7 +54,7 @@ export const deleteTaskValidation = [
     .notEmpty()
     .withMessage("El id no debe ser vacio")
     .isInt()
-    .withMessage("El id debe ser un numero entero")
+    .withMessage("El id debe ser un numero entero"),
 ];
 
 export const getTaskValidation = [
@@ -60,5 +62,5 @@ export const getTaskValidation = [
     .notEmpty()
     .withMessage("El id no debe ser vacio")
     .isInt()
-    .withMessage("El id debe ser un numero entero")
+    .withMessage("El id debe ser un numero entero"),
 ];
