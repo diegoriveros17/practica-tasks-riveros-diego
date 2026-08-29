@@ -1,6 +1,4 @@
 import { body, param } from "express-validator";
-import { UserModel } from "../../models/user.model.js";
-import { ProfileModel } from "../../models/profile.model.js";
 
 export const createProfileValidation = [
   body("description").optional(),
@@ -9,22 +7,7 @@ export const createProfileValidation = [
     .notEmpty()
     .withMessage("El user_id no puede ser vacio")
     .isInt()
-    .withMessage("El user_id debe ser un numero entero")
-    .custom(async (user_id) => {
-      const userExist = await UserModel.findByPk(user_id);
-      if (!userExist) {
-        throw new Error(
-          "No existe el usuario con el que intenta crear el perfil",
-        );
-      }
-
-      const profileExist = await ProfileModel.findOne({ where: { user_id } });
-      if (profileExist) {
-        throw new Error("Ya existe un perfil registrado con este usuario");
-      }
-
-      return true;
-    }),
+    .withMessage("El user_id debe ser un numero entero"),
 ];
 
 export const updateProfileValidation = [
@@ -34,29 +17,12 @@ export const updateProfileValidation = [
     .notEmpty()
     .withMessage("El user_id no puede ser vacio")
     .isInt()
-    .withMessage("El user_id debe ser un numero entero")
-    .custom(async (user_id) => {
-      const userExist = await UserModel.findByPk(user_id);
-      if (!userExist) {
-        throw new Error(
-          "No existe el usuario con el que intenta crear el perfil",
-        );
-      }
-
-      return true;
-    }),
+    .withMessage("El user_id debe ser un numero entero"),
   param("id")
     .notEmpty()
     .withMessage("El id no debe ser vacio")
     .isInt()
-    .withMessage("El id debe ser un numero entero")
-    .custom(async (id) => {
-      const profileExist = await ProfileModel.findByPk(id);
-      if (!profileExist) {
-        throw new Error("No existe un perfil registrado con este id");
-      }
-      return true;
-    }),
+    .withMessage("El id debe ser un numero entero"),
 ];
 
 export const deleteProfileValidation = [
@@ -64,14 +30,7 @@ export const deleteProfileValidation = [
     .notEmpty()
     .withMessage("El id no debe ser vacio")
     .isInt()
-    .withMessage("El id debe ser un numero entero")
-    .custom(async (id) => {
-      const profileExist = await ProfileModel.findByPk(id);
-      if (!profileExist) {
-        throw new Error("No existe un perfil registrado con este id");
-      }
-      return true;
-    }),
+    .withMessage("El id debe ser un numero entero"),
 ];
 
 export const getProfileValidation = [
@@ -79,12 +38,5 @@ export const getProfileValidation = [
     .notEmpty()
     .withMessage("El id no debe ser vacio")
     .isInt()
-    .withMessage("El id debe ser un numero entero")
-    .custom(async (id) => {
-      const profileExist = await ProfileModel.findByPk(id);
-      if (!profileExist) {
-        throw new Error("No existe un perfil asociado con este id");
-      }
-      return true;
-    }),
+    .withMessage("El id debe ser un numero entero"),
 ];

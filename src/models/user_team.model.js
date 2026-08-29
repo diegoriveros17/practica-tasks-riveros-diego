@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/database.js";
-import { UserModel } from "./user.model.js";
-import { TeamModel } from "./team.models.js";
+// import { UserModel } from "./user.model.js";
+// import { TeamModel } from "./team.models.js";
 
 export const UserTeamModel = sequelize.define(
   "User_Team",
@@ -16,19 +16,6 @@ export const UserTeamModel = sequelize.define(
     },
   },
   {
-    timestamps: false,
+    timestamps: true,
   },
 );
-
-// RELACION MUCHOS A MUCHOS
-UserModel.belongsToMany(TeamModel, {
-  through: UserTeamModel,
-  foreignKey: "user_id",
-  as: "equipos",
-});
-
-TeamModel.belongsToMany(UserModel, {
-  through: UserTeamModel,
-  foreignKey: "team_id",
-  as: "miembros",
-});
