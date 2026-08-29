@@ -1,7 +1,5 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/database.js";
-// import { UserModel } from "./user.model.js";
-// import { TeamModel } from "./team.models.js";
 
 export const UserTeamModel = sequelize.define(
   "User_Team",
@@ -17,5 +15,6 @@ export const UserTeamModel = sequelize.define(
   },
   {
     timestamps: true,
+    paranoid: true,
   },
 );

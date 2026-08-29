@@ -36,4 +36,18 @@ TeamModel.belongsToMany(UserModel, {
   as: "miembros",
 });
 
+UserModel.beforeDestroy(async (user, options) => {
+  await UserTeamModel.destroy({
+    where: { user_id: user.id },
+    transaction: options.transaction,
+  });
+});
+
+TeamModel.beforeDestroy(async (team, options) => {
+  await UserTeamModel.destroy({
+    where: { team_id: team.id },
+    transaction: options.transaction,
+  });
+});
+
 export { UserModel, TaskModel, TeamModel, ProfileModel, UserTeamModel };
